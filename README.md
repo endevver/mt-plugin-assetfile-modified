@@ -1,29 +1,36 @@
 # AssetFileModified plugin for Melody/Movable Type #
 
-Display assets sorted by actual upload time!
+Enables publishing of assets and/or asset metadata, sorted by actual upload
+time!
 
-## Features ##
+## Can't we already do that? ##
+
+No.
+
+## Current functionality ##
 
 The current version of the plugin does the following:
 
-* Perform an upgrade procedure which creates a `file_mtime` column in the
+* **Schema modification upgrade and existing asset survey:**
+  Perform an upgrade procedure which creates a `file_mtime` column in the
   `mt_asset` table and populates each asset record with the modification time
   of the file it represents. (**n.b.:** If you have a lot of assets, you may
   want to use the command line script `MT_HOME/tools/upgrade`).
 
-* The `file_mtime` column is indexed which means template designers can use
-  it to sort `mt:Assets`: `<mt:Assets sort_by="file_mtime">`
+* **mt:Assets sorting by assetfile modified time:**
+  The `file_mtime` column is indexed which means template designers can use it 
+  to sort `mt:Assets`: `<mt:Assets sort_by="file_mtime">`
 
-* Each time an asset is uploaded (both new assets and overwrites) this plugin
-  sets the `file_mtime` value accordingly in the asset record.
-
-* Provides a template tag, **mt:AssetsUploaded**, which is exactly like
+* Provides a template block tag, **mt:AssetsUploaded**, which is exactly like
   mt:Assets except more predictable, well-behaved and has fewer characters to
   type.
 
 * Provides a standard MT date template tag, **mt:AssetFileModified**, which
   outputs the file modification time in your desired format for the asset in
   context.
+
+* Each time an asset is uploaded (both new assets and overwrites) this plugin
+  sets the `file_mtime` value accordingly in the asset record.
 
 * When a user navigates to an asset listing screen, the plugin ensures that
   all assets on the current page of the listing also have a populated value
@@ -52,6 +59,8 @@ If you use Git, you can do the following:
     git clone git://github.com/endevver/mt-plugin-assetfile-modified.git
 
 ## METHODS ##
+
+All of the following methods can be found in the AssetFileModified package.
 
 ### `hdlr_asset_file_modified($ctx, $args)` ###
 
