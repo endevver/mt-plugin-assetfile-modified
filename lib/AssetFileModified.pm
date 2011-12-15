@@ -5,6 +5,10 @@ use warnings;
 use Carp qw( croak );
 use Data::Dumper;
 
+use MT::Log::Log4perl qw( l4mtdump ); use Log::Log4perl qw( :resurrect );
+our $logger;
+
+
 =head1 NAME
 
 AssetFileModified - Display assets sorted by actual upload time
@@ -83,19 +87,42 @@ sub hdlr_assets_uploaded {
     my ( $ctx, $args, $cond ) = @_;
     my $class        = MT->model('asset');
 
+    # Set defaults
+    $args->{limit}  ||= delete $args->{lastn} || 50;
+    $args->{offset} ||= 0;
+    $args->{sort_by} = 'file_mtime'; # To preserve sort in _hdlr_assets
+
     local $ctx->{__stash}{assets};
-    my (@filters, %blog_terms, %blog_args, %terms, %args);
-    
+
+    my (%blog_terms, %blog_args, %terms, %args);
     $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
         or return $ctx->error($ctx->errstr);
+
+    # Default load terms apply blog filter (if any) but NO class filter
     %terms = ( %blog_terms, class => '*' );
+
+    # If 'type' arg is specified, override class filter.
+    # Delete the arg so it's not reapplied later in _hdlr_assets
+    if ( my $type = delete $args->{type} ) {
+        $terms{class} = [ split( ',',  $type ) ];
+    }
+
+    # Load arguments, apply blog args, limit and offset.
+    # Turn default created_on sort into a 2-column sort with
+    # file_mtime applied first.
+    my $sort_order = ($args->{sort_order}||'') eq 'ascend' ? 'ASC' : 'DESC';
     %args  = (
         %blog_args,
-        sort      => 'file_mtime',
-        direction => $args->{sort_order} || 'descend',
-        limit     => $args->{limit}      || 50,
+        sort      => $args->{sort_by},
+	direction => $args->{sort_order} || 'descend',
+        limit     => $args->{limit},
+        offset    => $args->{offset},
     );
-    
+
+    # Adds parent filter (skips any generated files such as thumbnails)
+    my $is_null         = 'is null';
+    $args{null}{parent} = 1;
+    $terms{parent}      = \$is_null;
 
     my @assets = $class->load( \%terms, \%args )
         or return _hdlr_pass_tokens_else(@_);
@@ -242,6 +269,32 @@ sub file_modified {
     }
 
     return $file_modified;
+}
+
+
+sub init_app {
+    my $app = shift;
+    ###l4p $logger ||= MT::Log::Log4perl->new(); $logger->trace();
+    ##l4p $logger->debug('init_app:', l4mtdump([@_]));
+    MT->model('asset')->add_trigger( pre_search => \&asset_pre_search );
+}
+
+sub asset_pre_search {
+    my $cb = shift;
+    ###l4p $logger ||= MT::Log::Log4perl->new(); $logger->trace();
+    ###l4p $logger->debug('pre_search:', l4mtdump([@_]));
+}
+
+sub cb_asset_preload {
+    my $cb = shift;
+    ###l4p $logger ||= MT::Log::Log4perl->new(); $logger->trace();
+    ###l4p $logger->debug('preload:', l4mtdump([@_]));
+}
+
+sub cb_asset_postload {
+    my $cb = shift;
+    ###l4p $logger ||= MT::Log::Log4perl->new(); $logger->trace();
+    ###l4p $logger->debug('postload:', l4mtdump([@_]));
 }
 
 

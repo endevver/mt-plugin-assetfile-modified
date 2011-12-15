@@ -1,5 +1,5 @@
 name:           Asset File Modified
-version:        1.0.1
+version:        1.0.2
 description:    This plugin gives MT the ability to know/publish when an asset's underlying file was last changed.
 author_link:    http://endevver.com/
 author_name:    "Jay Allen, Endevver LLC"
@@ -24,6 +24,7 @@ tags:
         AssetsUploaded:    $AssetFileModified::AssetFileModified::hdlr_assets_uploaded
 
 callbacks:
+#    init_app: 				     $AssetFileModified::AssetFileModified::init_app
     MT::App::CMS::template_param.edit_asset: $AssetFileModified::AssetFileModified::cb_edit_asset_param
     MT::App::CMS::template_param.list_asset: $AssetFileModified::AssetFileModified::cb_list_assets_param
     cms_upload_file.file:                    $AssetFileModified::AssetFileModified::on_upload
@@ -34,7 +35,10 @@ callbacks:
     api_upload_file.image:                   $AssetFileModified::AssetFileModified::on_upload
     api_upload_file.video:                   $AssetFileModified::AssetFileModified::on_upload
     api_upload_file.audio:                   $AssetFileModified::AssetFileModified::on_upload
-
+#    MT::Asset::pre_load:                     $AssetFileModified::AssetFileModified::cb_asset_preload
+#    MT::Asset::post_load:                    $AssetFileModified::AssetFileModified::cb_asset_postload
+#    cms_pre_load.asset:                      $AssetFileModified::AssetFileModified::cb_asset_preload
+#    cms_post_load.asset:                     $AssetFileModified::AssetFileModified::cb_asset_postload
 
 upgrade_functions:
     populate_asset_file_modified:
