@@ -1,5 +1,5 @@
 name:           Asset File Modified
-version:        1.0.2
+version:        1.0.3
 description:    This plugin gives MT the ability to know/publish when an asset's underlying file was last changed.
 author_link:    http://endevver.com/
 author_name:    "Jay Allen, Endevver LLC"
