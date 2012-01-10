@@ -5,7 +5,7 @@ use warnings;
 use Carp qw( croak );
 use Data::Dumper;
 
-use MT::Log::Log4perl qw( l4mtdump ); use Log::Log4perl qw( :resurrect );
+#use MT::Log::Log4perl qw( l4mtdump ); use Log::Log4perl qw( :resurrect );
 our $logger;
 
 
