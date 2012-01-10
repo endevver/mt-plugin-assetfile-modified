@@ -125,7 +125,7 @@ sub hdlr_assets_uploaded {
     $terms{parent}      = \$is_null;
 
     my @assets = $class->load( \%terms, \%args )
-        or return _hdlr_pass_tokens_else(@_);
+        or return MT::Template::Context::_hdlr_pass_tokens_else(@_);
 
     $ctx->{__stash}{assets} = \@assets;
     return $ctx->_hdlr_assets( $args, $cond );
