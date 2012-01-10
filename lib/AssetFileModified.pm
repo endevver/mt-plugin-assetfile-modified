@@ -114,7 +114,7 @@ sub hdlr_assets_uploaded {
     %args  = (
         %blog_args,
         sort      => $args->{sort_by},
-	direction => $args->{sort_order} || 'descend',
+        direction => $args->{sort_order} || 'descend',
         limit     => $args->{limit},
         offset    => $args->{offset},
     );
