@@ -84,8 +84,9 @@ becomes
 =cut
 
 sub hdlr_assets_uploaded {
-    my ( $ctx, $args, $cond ) = @_;
-    my $class        = MT->model('asset');
+    my $ctx             = shift;
+    my ( $args, $cond ) = @_;
+    my $class           = MT->model('asset');
 
     # Set defaults
     $args->{limit}  ||= delete $args->{lastn} || 50;
@@ -96,7 +97,7 @@ sub hdlr_assets_uploaded {
 
     my (%blog_terms, %blog_args, %terms, %args);
     $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
-        or return $ctx->error($ctx->errstr);
+        or return;
 
     # Default load terms apply blog filter (if any) but NO class filter
     %terms = ( %blog_terms, class => '*' );
@@ -125,7 +126,7 @@ sub hdlr_assets_uploaded {
     $terms{parent}      = \$is_null;
 
     my @assets = $class->load( \%terms, \%args )
-        or return MT::Template::Context::_hdlr_pass_tokens_else(@_);
+        or return $ctx->_hdlr_pass_tokens_else( @_ );
 
     $ctx->{__stash}{assets} = \@assets;
     return $ctx->_hdlr_assets( $args, $cond );
