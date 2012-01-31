@@ -242,6 +242,10 @@ no warnings 'redefine';
 
 sub file_modified {
     my $asset         = shift;
+
+    # Check if the file exists first.
+    return if !$asset->file_path || !-e $asset->file_path;
+
     my $file_modified = $asset->file_mtime(@_) || 0;
     return $file_modified if $file_modified;
 
